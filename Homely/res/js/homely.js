@@ -1,3 +1,6 @@
+const MILLISECONDS_TO_HOURS = 1000 * 60 * 60;
+const UNSPLASH_REFRESH_INTERVAL_HOURS = 3;
+
 $(document).ready(function() {
     // helper methods
     var cap = function cap(str) {
@@ -242,6 +245,7 @@ $(document).ready(function() {
         },
         "style": {
             "font": "",
+            "favicons": false,
             "fluid": false,
             "topbar": {
                 "fix": false,
@@ -251,6 +255,7 @@ $(document).ready(function() {
             "panel": "default",
             "background": {
                 "image": "../img/bg.png",
+                "lastImage": null,
                 "repeat": true,
                 "centre": true,
                 "fixed": false,
@@ -293,8 +298,8 @@ $(document).ready(function() {
         var css = [];
         if (settings.style["font"]) {
             css.push("* {\n"
-                   + "    font-family: '" + settings.style["font"] + "';\n"
-                   + "}");
+                    + "    font-family: '" + settings.style["font"] + "';\n"
+                    + "}");
         }
         $("body").addClass(settings.style["fluid"] ? "container-fluid" : "container");
         if (settings.style["topbar"].fix) {
@@ -307,13 +312,72 @@ $(document).ready(function() {
             $("nav").removeClass("navbar-default").addClass("navbar-inverse");
         }
         if (settings.style["background"].image) {
-            css.push("html {\n"
-                   + "    background-image: url(" + settings.style["background"].image + ");\n"
-                   + "    background-repeat: " + (settings.style["background"].repeat ? "" : "no-") + "repeat;\n"
-                   + "    background-position: " + (settings.style["background"].centre ? "center" : "initial") + ";\n"
-                   + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
-                   + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
-                   + "}");
+            if (settings.style["background"].image.substr(0,8) === "unsplash") {
+                let lastImage = settings.style["background"].lastImage;
+                let backgroundImage = null;
+                let query = settings.style["background"].image.substr(9);
+                if (lastImage !== undefined && lastImage !== null) {
+                    let lastTime = Date.parse(lastImage.queryTime);
+                    if (!Number.isNaN(lastTime)) {
+                        let hoursSinceNewPhoto = (new Date() - lastTime) / MILLISECONDS_TO_HOURS;
+                        if (hoursSinceNewPhoto < UNSPLASH_REFRESH_INTERVAL_HOURS) {
+                            backgroundImage = lastImage.urls.full;
+                        }
+                        if (lastImage.lastQuery !== query) {
+                            backgroundImage = null;
+                        }
+                    }
+                }
+                if (backgroundImage === null) {
+                    $.ajax({
+                        url: `https://api.unsplash.com/photos/random?client_id=ayAIqsDDYvD6bdwA00jgwlFKvMwBwF23i6ZudDqYhOA&query=${query}&featured=true`,
+                        // headers: handle.headers,
+                        dataType: "json",
+                        success: function(resp, stat, xhr) {
+                            var backgroundImage = resp.urls.full;
+                            css.push("html {\n"
+                                    + "    background-image: url(" + backgroundImage + ");\n"
+                                    + "    background-repeat: " + (settings.style["background"].repeat ? "" : "no-") + "repeat;\n"
+                                    + "    background-position: " + (settings.style["background"].centre ? "center" : "initial") + ";\n"
+                                    + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
+                                    + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
+                                    + "}");
+                            $(document.head).append($("<style/>").html(css.join("\n")));
+                            resp.queryTime = (new Date()).toISOString();
+                            resp.lastQuery = query;
+                            settings.style["background"].lastImage = resp;
+                            // write to local storage
+                            chrome.storage.local.set(settings, function() {
+                                if (chrome.runtime.lastError) {
+                                    console.error("Unable to save after fetching Unsplash background");
+                                    return;
+                                }
+                            });
+                            // ajaxCount(typeof(notif.include) === "boolean" && !notif.include ? [0] : counts);
+                        },
+                        error: function(xhr, stat, err) {
+                            // ajaxCount([0]);
+                        }
+                    });
+                } else {
+                    css.push("html {\n"
+                            + "    background-image: url(" + backgroundImage + ");\n"
+                            + "    background-repeat: " + (settings.style["background"].repeat ? "" : "no-") + "repeat;\n"
+                            + "    background-position: " + (settings.style["background"].centre ? "center" : "initial") + ";\n"
+                            + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
+                            + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
+                            + "}");
+                    $(document.head).append($("<style/>").html(css.join("\n")));
+                }
+            } else {
+                css.push("html {\n"
+                        + "    background-image: url(" + settings.style["background"].image + ");\n"
+                        + "    background-repeat: " + (settings.style["background"].repeat ? "" : "no-") + "repeat;\n"
+                        + "    background-position: " + (settings.style["background"].centre ? "center" : "initial") + ";\n"
+                        + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
+                        + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
+                        + "}");
+            }
         }
         if (css.length) {
             $(document.head).append($("<style/>").html(css.join("\n")));
@@ -606,6 +670,24 @@ $(document).ready(function() {
             });
         };
         if (!settings.bookmarks["enable"]) $("#menu-links").hide();
+        let extractHostname = (url) => {
+            var hostname;
+            //find & remove protocol (http, ftp, etc.) and get hostname
+        
+            if (url.indexOf("//") > -1) {
+                hostname = url.split('/')[2];
+            }
+            else {
+                hostname = url.split('/')[0];
+            }
+        
+            //find & remove port number
+            hostname = hostname.split(':')[0];
+            //find & remove "?"
+            hostname = hostname.split('?')[0];
+        
+            return hostname;
+        };
         var populateLinks = function populateLinks() {
             $("#alerts, #links").empty();
             if (settings.links["edit"].dragdrop) $("#links").off("sortupdate");
@@ -785,7 +867,15 @@ $(document).ready(function() {
                         }
                         btn.append(menu);
                     } else {
-                        btn = $("<a/>").addClass("btn btn-block btn-" + linkBtn.style).attr("href", linkBtn.url).text(linkBtn.title);
+                        let domain = extractHostname(linkBtn.url);
+                        let favicon = `<img class="favicon" src="https://www.google.com/s2/favicons?domain=${domain}" />`;
+                        let btnHtml = "";
+                        if (settings.style.favicons) {
+                            btnHtml = `${favicon} ${linkBtn.title}`;
+                        } else {
+                            btnHtml = `${linkBtn.title}`;
+                        }
+                        btn = $("<a/>").addClass("btn btn-block btn-" + linkBtn.style).attr("href", linkBtn.url).html(btnHtml);
                         if (!linkBtn.title) btn.html("&nbsp;");
                         // workaround for accessing Chrome and file URLs
                         for (var prefix of ["chrome", "chrome-extension", "file"]) {
@@ -2100,12 +2190,13 @@ $(document).ready(function() {
                                                   .prop("disabled", !settings.general["weather"].show);
             $("#settings-general-proxy").prop("checked", settings.general["proxy"]);
             $("#settings-style-font").val(settings.style["font"]);
+            $("#settings-style-favicons").prop("checked", settings.style["favicons"]);
             $("#settings-style-fluid").prop("checked", settings.style["fluid"]);
             $("#settings-style-topbar-fix").prop("checked", settings.style["topbar"].fix);
             $("#settings-style-topbar-dark").prop("checked", settings.style["topbar"].dark);
             $("#settings-style-topbar-labels").prop("checked", settings.style["topbar"].labels);
             $("#settings-style-panel label.btn-" + settings.style["panel"]).click();
-            $("#settings-style-background-image").data("val", settings.style["background"].image).prop("placeholder", "(unchanged)");
+            $("#settings-style-background-image").data("val", settings.style["background"].image).prop("placeholder", "(unchanged)").val(settings.style["background"].image);
             $("#settings-style-background-repeat").prop("checked", settings.style["background"].repeat);
             $("#settings-style-background-centre").prop("checked", settings.style["background"].centre);
             $("#settings-style-background-fixed").prop("checked", settings.style["background"].fixed);
@@ -2308,6 +2399,24 @@ $(document).ready(function() {
                 }
             }
         });
+        // Landscape images
+        $("#settings-style-background-landscapes").click(function(e) {
+            $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("unsplash:landscape");
+            $("#settings-style-background-repeat").prop("checked", true);
+            $("#settings-style-background-centre").prop("checked", true);
+            $("#settings-style-background-fixed").prop("checked", false);
+            $("#settings-style-background-stretch").prop("checked", true);
+            $(".settings-style-background-check").prop("disabled", false).next().removeClass("text-muted");
+        });
+        // Landscape images
+        $("#settings-style-background-city").click(function(e) {
+            $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("unsplash:city");
+            $("#settings-style-background-repeat").prop("checked", true);
+            $("#settings-style-background-centre").prop("checked", true);
+            $("#settings-style-background-fixed").prop("checked", false);
+            $("#settings-style-background-stretch").prop("checked", true);
+            $(".settings-style-background-check").prop("disabled", false).next().removeClass("text-muted");
+        });
         // clear image
         $("#settings-style-background-none").click(function(e) {
             $("#settings-style-background-image").data("val", "").prop("placeholder", "(none)").val("");
@@ -2495,6 +2604,7 @@ $(document).ready(function() {
             settings.general["proxy"] = $("#settings-general-proxy").prop("checked");
             if (!settings.general["proxy"]) revoke("proxy");
             settings.style["font"] = $("#settings-style-font").val();
+            settings.style["favicons"] = $("#settings-style-favicons").prop("checked");
             settings.style["fluid"] = $("#settings-style-fluid").prop("checked");
             settings.style["topbar"] = {
                 fix: $("#settings-style-topbar-fix").prop("checked"),
@@ -2504,6 +2614,7 @@ $(document).ready(function() {
             settings.style["panel"] = $("#settings-style-panel label.active input").val();
             settings.style["background"] = {
                 image: $("#settings-style-background-image").val() ? $("#settings-style-background-image").val() : $("#settings-style-background-image").data("val"),
+                lastImage: settings.style.background.lastImage,
                 repeat: $("#settings-style-background-repeat").prop("checked"),
                 centre: $("#settings-style-background-centre").prop("checked"),
                 fixed: $("#settings-style-background-fixed").prop("checked"),
