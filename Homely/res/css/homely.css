@@ -221,3 +221,16 @@ input[type=range] {
     margin-top: 8px;
     margin-bottom: 16px;
 }
+
+
+.favicon-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.favicon {
+    padding-right: 4px;
+}
+.favicon + span {
+    flex-grow: 1;
+}

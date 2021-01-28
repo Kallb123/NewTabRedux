@@ -871,7 +871,7 @@ $(document).ready(function() {
                         let favicon = `<img class="favicon" src="https://www.google.com/s2/favicons?domain=${domain}" />`;
                         let btnHtml = "";
                         if (settings.style.favicons) {
-                            btnHtml = `${favicon} ${linkBtn.title}`;
+                            btnHtml = `<div class="favicon-cell">${favicon} <span>${linkBtn.title}</span></div>`;
                         } else {
                             btnHtml = `${linkBtn.title}`;
                         }
