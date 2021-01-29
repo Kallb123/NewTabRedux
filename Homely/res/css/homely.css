@@ -224,12 +224,14 @@ input[type=range] {
 
 
 .favicon-cell {
-    display: flex;
     align-items: center;
+    display: flex;
     justify-content: space-between;
 }
 .favicon {
-    padding-right: 4px;
+    height: 16px;
+    margin-right: 4px;
+    width: 16px;
 }
 .favicon + span {
     flex-grow: 1;

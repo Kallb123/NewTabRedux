@@ -867,10 +867,16 @@ $(document).ready(function() {
                         }
                         btn.append(menu);
                     } else {
-                        let domain = extractHostname(linkBtn.url);
-                        let favicon = `<img class="favicon" src="https://www.google.com/s2/favicons?domain=${domain}" />`;
                         let btnHtml = "";
                         if (settings.style.favicons) {
+                            let faviconURL = "";
+                            if (linkBtn.favicon) {
+                                faviconURL = linkBtn.favicon;
+                            } else {
+                                let domain = extractHostname(linkBtn.url);
+                                faviconURL = `https://www.google.com/s2/favicons?domain=${domain}`;
+                            }
+                            let favicon = `<img class="favicon" src="${faviconURL}" />`;;
                             btnHtml = `<div class="favicon-cell">${favicon} <span>${linkBtn.title}</span></div>`;
                         } else {
                             btnHtml = `${linkBtn.title}`;
