@@ -1149,7 +1149,7 @@ $(document).ready(function() {
                         }));
                         blk.append(menuBtnsRoot);
                     } else {
-                        var linkGroup = $("<div/>").addClass("input-group");
+                        var linkGroup = $("<div/>").addClass("input-group form-control-pad-bottom");
                         var url = $("<input>").attr("type", "text").addClass("form-control").attr("placeholder", "Link URL").val(linkBtn.url).change(function(e) {
                             linkBtn.url = $(this).val();
                         })
@@ -1174,6 +1174,13 @@ $(document).ready(function() {
                         linkGroup.append(linkBtnRootRight);
                         blk.append(linkGroup);
                     }
+                    var iconGroup = $("<div/>").addClass("input-group").css("width", "100%");
+                    let favicon = linkBtn.favicon ? linkBtn.favicon : "";
+                    var iconURL = $("<input>").attr("type", "text").addClass("form-control").attr("placeholder", "Favicon URL").val(favicon).change(function(e) {
+                        linkBtn.favicon = $(this).val();
+                    })
+                    iconGroup.append(iconURL);
+                    blk.append(iconGroup);
                     $("#links-editor-body").append(blk);
                 });
                 // reset scroll position
