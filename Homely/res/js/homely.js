@@ -311,11 +311,12 @@ $(document).ready(function() {
         if (settings.style["topbar"].dark) {
             $("nav").removeClass("navbar-default").addClass("navbar-inverse");
         }
-        if (settings.style["background"].image) {
-            if (settings.style["background"].image.substr(0,8) === "unsplash") {
+        let imageSetting = settings.style["background"].image;
+        if (imageSetting) {
+            if (imageSetting.substr(0,8) === "unsplash") {
                 let lastImage = settings.style["background"].lastImage;
                 let backgroundImage = null;
-                let query = settings.style["background"].image.substr(9);
+                let query = "";
                 if (lastImage !== undefined && lastImage !== null) {
                     let lastTime = Date.parse(lastImage.queryTime);
                     if (!Number.isNaN(lastTime)) {
@@ -323,14 +324,22 @@ $(document).ready(function() {
                         if (hoursSinceNewPhoto < UNSPLASH_REFRESH_INTERVAL_HOURS) {
                             backgroundImage = lastImage.urls.full;
                         }
-                        if (lastImage.lastQuery !== query) {
+                        if (lastImage.lastQuery !== imageSetting) {
                             backgroundImage = null;
+                            let queryString = imageSetting.substr(9);
+                            if (imageSetting.substr(8,1) === ":") {
+                                query = `&featured=true&query=${queryString}`;
+                            } else if (imageSetting.substr(8,1) === "#") {
+                                query = `&collections=${queryString}`;
+                            } else if (imageSetting.substr(8,1) === "@") {
+                                query = `&username=${queryString}`;
+                            }
                         }
                     }
                 }
                 if (backgroundImage === null) {
                     $.ajax({
-                        url: `https://api.unsplash.com/photos/random?client_id=ayAIqsDDYvD6bdwA00jgwlFKvMwBwF23i6ZudDqYhOA&query=${query}&featured=true`,
+                        url: `https://api.unsplash.com/photos/random?client_id=ayAIqsDDYvD6bdwA00jgwlFKvMwBwF23i6ZudDqYhOA&content_filter=high${query}`,
                         // headers: handle.headers,
                         dataType: "json",
                         success: function(resp, stat, xhr) {
@@ -344,7 +353,7 @@ $(document).ready(function() {
                                     + "}");
                             $(document.head).append($("<style/>").html(css.join("\n")));
                             resp.queryTime = (new Date()).toISOString();
-                            resp.lastQuery = query;
+                            resp.lastQuery = imageSetting;
                             settings.style["background"].lastImage = resp;
                             // write to local storage
                             chrome.storage.local.set(settings, function() {
@@ -2405,9 +2414,27 @@ $(document).ready(function() {
                 }
             }
         });
-        // Landscape images
-        $("#settings-style-background-landscapes").click(function(e) {
-            $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("unsplash:landscape");
+        // Unsplash query images
+        $("#settings-style-background-unsplash-query").click(function(e) {
+            $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("unsplash:QUERY_HERE");
+            $("#settings-style-background-repeat").prop("checked", true);
+            $("#settings-style-background-centre").prop("checked", true);
+            $("#settings-style-background-fixed").prop("checked", false);
+            $("#settings-style-background-stretch").prop("checked", true);
+            $(".settings-style-background-check").prop("disabled", false).next().removeClass("text-muted");
+        });
+        // Unsplash collection images
+        $("#settings-style-background-unsplash-collection").click(function(e) {
+            $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("unsplash#COLLECTION_ID1,COLLECTION_ID2");
+            $("#settings-style-background-repeat").prop("checked", true);
+            $("#settings-style-background-centre").prop("checked", true);
+            $("#settings-style-background-fixed").prop("checked", false);
+            $("#settings-style-background-stretch").prop("checked", true);
+            $(".settings-style-background-check").prop("disabled", false).next().removeClass("text-muted");
+        });
+        // Unsplash user images
+        $("#settings-style-background-unsplash-user").click(function(e) {
+            $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("unsplash@USERNAME");
             $("#settings-style-background-repeat").prop("checked", true);
             $("#settings-style-background-centre").prop("checked", true);
             $("#settings-style-background-fixed").prop("checked", false);
@@ -2415,8 +2442,26 @@ $(document).ready(function() {
             $(".settings-style-background-check").prop("disabled", false).next().removeClass("text-muted");
         });
         // Landscape images
+        $("#settings-style-background-landscape").click(function(e) {
+            $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("unsplash:landscape");
+            $("#settings-style-background-repeat").prop("checked", true);
+            $("#settings-style-background-centre").prop("checked", true);
+            $("#settings-style-background-fixed").prop("checked", false);
+            $("#settings-style-background-stretch").prop("checked", true);
+            $(".settings-style-background-check").prop("disabled", false).next().removeClass("text-muted");
+        });
+        // City images
         $("#settings-style-background-city").click(function(e) {
             $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("unsplash:city");
+            $("#settings-style-background-repeat").prop("checked", true);
+            $("#settings-style-background-centre").prop("checked", true);
+            $("#settings-style-background-fixed").prop("checked", false);
+            $("#settings-style-background-stretch").prop("checked", true);
+            $(".settings-style-background-check").prop("disabled", false).next().removeClass("text-muted");
+        });
+        // Forest collection images
+        $("#settings-style-background-forest").click(function(e) {
+            $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("unsplash#2403024");
             $("#settings-style-background-repeat").prop("checked", true);
             $("#settings-style-background-centre").prop("checked", true);
             $("#settings-style-background-fixed").prop("checked", false);
