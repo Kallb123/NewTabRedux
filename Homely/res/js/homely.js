@@ -324,20 +324,20 @@ $(document).ready(function() {
                         if (hoursSinceNewPhoto < UNSPLASH_REFRESH_INTERVAL_HOURS) {
                             backgroundImage = lastImage.urls.full;
                         }
-                        if (lastImage.lastQuery !== imageSetting) {
-                            backgroundImage = null;
-                            let queryString = imageSetting.substr(9);
-                            if (imageSetting.substr(8,1) === ":") {
-                                query = `&featured=true&query=${queryString}`;
-                            } else if (imageSetting.substr(8,1) === "#") {
-                                query = `&collections=${queryString}`;
-                            } else if (imageSetting.substr(8,1) === "@") {
-                                query = `&username=${queryString}`;
-                            }
-                        }
+                    }
+                    if (lastImage.lastQuery !== imageSetting) {
+                        backgroundImage = null;
                     }
                 }
                 if (backgroundImage === null) {
+                    let queryString = imageSetting.substr(9);
+                    if (imageSetting.substr(8,1) === ":") {
+                        query = `&featured=true&query=${queryString}`;
+                    } else if (imageSetting.substr(8,1) === "#") {
+                        query = `&collections=${queryString}`;
+                    } else if (imageSetting.substr(8,1) === "@") {
+                        query = `&username=${queryString}`;
+                    }
                     $.ajax({
                         url: `https://api.unsplash.com/photos/random?client_id=ayAIqsDDYvD6bdwA00jgwlFKvMwBwF23i6ZudDqYhOA&content_filter=high${query}`,
                         // headers: handle.headers,
