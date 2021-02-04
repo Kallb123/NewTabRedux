@@ -893,7 +893,7 @@ $(document).ready(function() {
                                 let domain = extractHostname(linkBtn.url);
                                 faviconURL = `https://www.google.com/s2/favicons?domain=${domain}`;
                             }
-                            let favicon = `<img class="favicon" src="${faviconURL}" />`;;
+                            let favicon = `<img class="favicon" src="${faviconURL}" alt="Icon for link" width=16 height=16 />`;;
                             btnHtml = `<div class="favicon-cell">${favicon} <span>${linkBtn.title}</span></div>`;
                         } else {
                             btnHtml = `${linkBtn.title}`;
