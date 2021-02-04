@@ -291,7 +291,7 @@ $(document).ready(function() {
         let imageSetting = settings.style["background"].image;
         if (imageSetting) {
             if (imageSetting.substr(0,8) === "unsplash") {
-                $("#settings-style-background-refresh").removeProp("disabled");
+                $("#settings-style-background-refresh").prop("disabled", false);
                 let lastImage = settings.style["background"].lastImage;
                 let backgroundImage = null;
                 let query = "";
@@ -893,7 +893,7 @@ $(document).ready(function() {
                                 let domain = extractHostname(linkBtn.url);
                                 faviconURL = `https://www.google.com/s2/favicons?domain=${domain}`;
                             }
-                            let favicon = `<img class="favicon" src="${faviconURL}" alt="Icon for link" width=16 height=16 />`;;
+                            let favicon = `<img class="favicon" src="${faviconURL}" alt="Icon for link" width=16 height=16 onerror="this.style.display='none'" />`;;
                             btnHtml = `<div class="favicon-cell">${favicon} <span>${linkBtn.title}</span></div>`;
                         } else {
                             btnHtml = `${linkBtn.title}`;
