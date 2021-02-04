@@ -286,34 +286,12 @@ $(document).ready(function() {
         "weather": ["http://api.openweathermap.org/"],
         "proxy": ["http://www.whatismyproxy.com/"]
     };
-    // load settings
-    chrome.storage.local.get(function(store) {
-        var firstRun = $.isEmptyObject(store);
-        // load links first
-        if (!firstRun) settings.links.content = store.links.content;
-        // merge settings with defaults
-        settings = $.extend(true, {}, settings, store);
-        // apply custom styles
-        document.title = settings.general["title"];
-        var css = [];
-        if (settings.style["font"]) {
-            css.push("* {\n"
-                    + "    font-family: '" + settings.style["font"] + "';\n"
-                    + "}");
-        }
-        $("body").addClass(settings.style["fluid"] ? "container-fluid" : "container");
-        if (settings.style["topbar"].fix) {
-            $("body").addClass("topbar-fix");
-            $("nav").addClass("navbar-fixed-top");
-            $("#menu-collapse").addClass("collapse navbar-collapse");
-            $("#menu-collapse-toggle").show();
-        }
-        if (settings.style["topbar"].dark) {
-            $("nav").removeClass("navbar-default").addClass("navbar-inverse");
-        }
+    var fetchBackgroundImage = function fetchBackgroundImage() {
+        let backgroundImageCSS = [];
         let imageSetting = settings.style["background"].image;
         if (imageSetting) {
             if (imageSetting.substr(0,8) === "unsplash") {
+                $("#settings-style-background-refresh").removeProp("disabled");
                 let lastImage = settings.style["background"].lastImage;
                 let backgroundImage = null;
                 let query = "";
@@ -343,15 +321,16 @@ $(document).ready(function() {
                         // headers: handle.headers,
                         dataType: "json",
                         success: function(resp, stat, xhr) {
+                            let ajaxCSS = [];
                             var backgroundImage = resp.urls.full;
-                            css.push("html {\n"
+                            ajaxCSS.push("html {\n"
                                     + "    background-image: url(" + backgroundImage + ");\n"
                                     + "    background-repeat: " + (settings.style["background"].repeat ? "" : "no-") + "repeat;\n"
                                     + "    background-position: " + (settings.style["background"].centre ? "center" : "initial") + ";\n"
                                     + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
                                     + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
                                     + "}");
-                            $(document.head).append($("<style/>").html(css.join("\n")));
+                            $(document.head).append($("<style/>").html(ajaxCSS.join("\n")));
                             resp.queryTime = (new Date()).toISOString();
                             resp.lastQuery = imageSetting;
                             settings.style["background"].lastImage = resp;
@@ -369,17 +348,16 @@ $(document).ready(function() {
                         }
                     });
                 } else {
-                    css.push("html {\n"
+                    backgroundImageCSS.push("html {\n"
                             + "    background-image: url(" + backgroundImage + ");\n"
                             + "    background-repeat: " + (settings.style["background"].repeat ? "" : "no-") + "repeat;\n"
                             + "    background-position: " + (settings.style["background"].centre ? "center" : "initial") + ";\n"
                             + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
                             + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
                             + "}");
-                    $(document.head).append($("<style/>").html(css.join("\n")));
                 }
             } else {
-                css.push("html {\n"
+                backgroundImageCSS.push("html {\n"
                         + "    background-image: url(" + settings.style["background"].image + ");\n"
                         + "    background-repeat: " + (settings.style["background"].repeat ? "" : "no-") + "repeat;\n"
                         + "    background-position: " + (settings.style["background"].centre ? "center" : "initial") + ";\n"
@@ -388,6 +366,36 @@ $(document).ready(function() {
                         + "}");
             }
         }
+        if (backgroundImageCSS.length) {
+            $(document.head).append($("<style/>").html(backgroundImageCSS.join("\n")));
+        }
+    }
+    // load settings
+    chrome.storage.local.get(function(store) {
+        var firstRun = $.isEmptyObject(store);
+        // load links first
+        if (!firstRun) settings.links.content = store.links.content;
+        // merge settings with defaults
+        settings = $.extend(true, {}, settings, store);
+        // apply custom styles
+        document.title = settings.general["title"];
+        var css = [];
+        if (settings.style["font"]) {
+            css.push("* {\n"
+                    + "    font-family: '" + settings.style["font"] + "';\n"
+                    + "}");
+        }
+        $("body").addClass(settings.style["fluid"] ? "container-fluid" : "container");
+        if (settings.style["topbar"].fix) {
+            $("body").addClass("topbar-fix");
+            $("nav").addClass("navbar-fixed-top");
+            $("#menu-collapse").addClass("collapse navbar-collapse");
+            $("#menu-collapse-toggle").show();
+        }
+        if (settings.style["topbar"].dark) {
+            $("nav").removeClass("navbar-default").addClass("navbar-inverse");
+        }
+        fetchBackgroundImage();
         if (css.length) {
             $(document.head).append($("<style/>").html(css.join("\n")));
         }
@@ -2488,6 +2496,17 @@ $(document).ready(function() {
             $("#settings-style-background-fixed").prop("checked", false);
             $("#settings-style-background-stretch").prop("checked", false);
             $(".settings-style-background-check").prop("disabled", false).next().removeClass("text-muted");
+        });
+        $("#settings-style-background-refresh").click(function(e) {
+            settings.style["background"].lastImage = null;
+            // write to local storage
+            chrome.storage.local.set(settings, function() {
+                if (chrome.runtime.lastError) {
+                    console.error("Unable to overwrite last image");
+                    return;
+                }
+                fetchBackgroundImage();
+            });
         });
         // custom CSS editor
         $("#settings-style-customcss-enable").change(function(e) {
