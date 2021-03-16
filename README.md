@@ -1,8 +1,38 @@
 # Homely
 
-Homely is a custom New Tab page replacement for Google Chrome.  It aims to provide a quick, customizable layout of links and menus, as well as simple bookmarks and history components.
+Homely is a custom New Tab page replacement for Google Chrome.
+It aims to provide a quick, customizable layout of links and menus, as well as simple bookmarks and history components.
+There are a variety of optional extras as well, including:
 
-## Requirements
+* The ability to display notification counts from common websites
+* The ability to display basket counts from common eCommerce websites
+* Widgets such as a clock, stopwatch, notepad, weather forecast, access to Chrome Apps, and IP information
+* Automatically renewing background images from Unsplash (with support for custom search terms or collections)
+
+## Installation
+
+Homely is built as a Chrome extension that replaces the New Tab page.
+The following steps will install the extension and automatically apply it as your New Tab page:
+
+1. Open the Chrome `Extension` settings by navigating the menus or visiting [chrome://extensions/](chrome://extensions/).
+2. Enable the `Developer mode` toggle in the top right.
+3. Select the `Load unpacked` button in the top left.
+4. Browse to and select the `Homely` root folder so that you can see the `lib` and `res` folders.
+
+You may or may not want the extension to work in Incognito mode, this can be toggled by going into the extension Details page.
+
+## Usage
+
+On first "boot", you will be provided with a default dashboard, but this can be overriden easily.
+If you select `Customize` from the top right `Settings` menu, then you can paste in a JSON source to override the dashboard.
+Alternatively, by hovering over the title of a block of links, you can click the dropdown to get the following menu:
+
+![Dropdown menu image](docs/edit-block-menu.png)
+
+This menu allows you to easily move blocks of links around without messing with JSON.
+The `Edit block` option opens a popup which allows you to edit the individual links and menus within each block (as well as adding more).
+
+## Dependencies
 
 * [Bootstrap](http://getbootstrap.com)
 * [Font Awesome](http://fontawesome.io)
@@ -12,7 +42,8 @@ Homely is a custom New Tab page replacement for Google Chrome.  It aims to provi
 
 ## Keyboard shortcuts
 
-If enabled, the page can be navigated by keyboard.  Note that Chrome will, by default, give focus to the onmibox when opening a new tab, so you must first `Tab` into the page.
+If enabled, the page can be navigated by keyboard.
+Note that Chrome will, by default, give focus to the onmibox when opening a new tab, so you must first `Tab` into the page.
 
 > Note: shortcuts are disabled whilst input fields (text boxes, selects, buttons) are currently focused.
 
