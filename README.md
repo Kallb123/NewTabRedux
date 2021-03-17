@@ -1,6 +1,6 @@
 # Homely
 
-Homely is a custom New Tab page replacement for Google Chrome.
+Homely is a custom New Tab page replacement for Google Chrome and Mozilla Firefox (other browsers, especially Chromium-based ones, will probably work too).
 It aims to provide a quick, customizable layout of links and menus, as well as simple bookmarks and history components.
 There are a variety of optional extras as well, including:
 
@@ -11,13 +11,23 @@ There are a variety of optional extras as well, including:
 
 ## Installation
 
-Homely is built as a Chrome extension that replaces the New Tab page.
-The following steps will install the extension and automatically apply it as your New Tab page:
+Homely is built as a browser extension that replaces the New Tab page.
+The following steps will install the extension and automatically apply it as your New Tab page.
+
+### Chrome
 
 1. Open the Chrome `Extension` settings by navigating the menus or visiting [chrome://extensions/](chrome://extensions/).
 2. Enable the `Developer mode` toggle in the top right.
 3. Select the `Load unpacked` button in the top left.
 4. Browse to and select the `Homely` root folder so that you can see the `lib` and `res` folders.
+
+### Firefox
+
+1. Download the latest xpi file from the [Releases page](https://github.com/Kallb123/Homely/releases)
+2. Open the Firefox `Addons` page by using the menu in the top right or by visiting [about:addons](about:addons)
+3. Click the settings icon in the top right and select `Install Add-on From File...`
+4. Navigate to the xpi file you downloaded in step 1 and select it
+5. Accept any prompt to install the add-on
 
 You may or may not want the extension to work in Incognito mode, this can be toggled by going into the extension Details page.
 
