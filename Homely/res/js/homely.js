@@ -893,7 +893,7 @@ $(document).ready(function() {
                                 let domain = extractHostname(linkBtn.url);
                                 faviconURL = `https://www.google.com/s2/favicons?domain=${domain}`;
                             }
-                            let favicon = `<img class="favicon" src="${faviconURL}" alt="Icon for link" width=16 height=16 onerror="this.style.display='none'" />`;;
+                            let favicon = `<img class="favicon" src="${faviconURL}" alt="Icon for link" style = "" onerror='this.style.visibility = "hidden"' width=16 height=16 />`;;
                             btnHtml = `<div class="favicon-cell">${favicon} <span>${linkBtn.title}</span></div>`;
                         } else {
                             btnHtml = `${linkBtn.title}`;
@@ -2759,8 +2759,6 @@ $(document).ready(function() {
         // export settings to file
         $("#settings-export").click(function(e) {
             var toExport = $.extend(true, {}, settings);
-            // converting image to URI takes too long, hangs browser
-            delete toExport.style["background"].image;
             // link has a download="homely.json" tag to force download
             $(this).attr("href", "data:application/json;charset=UTF-8," + encodeURIComponent(JSON.stringify(toExport)))
                    .click().attr("href", "");
