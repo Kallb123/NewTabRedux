@@ -16,10 +16,11 @@ The following steps will install the extension and automatically apply it as you
 
 ### Chrome
 
-1. Open the Chrome `Extension` settings by navigating the menus or visiting [chrome://extensions/](chrome://extensions/).
-2. Enable the `Developer mode` toggle in the top right.
-3. Select the `Load unpacked` button in the top left.
-4. Browse to and select the `Homely` root folder so that you can see the `lib` and `res` folders.
+1. Clone the repository to your computer, or [download it as a ZIP](https://github.com/Kallb123/Homely/archive/master.zip) then extract it somewhere it can stay permanently
+2. Open the Chrome `Extension` settings by navigating the menus or visiting [chrome://extensions/](chrome://extensions/)
+3. Enable the `Developer mode` toggle in the top right
+4. Select the `Load unpacked` button in the top left
+5. Browse to the `Homely` folder that you downloaded in step 1 so that you can see the `lib` and `res` folders, then press OK to accept this folder.
 
 ### Firefox
 
@@ -27,7 +28,7 @@ The following steps will install the extension and automatically apply it as you
 2. Open the Firefox `Addons` page by using the menu in the top right or by visiting [about:addons](about:addons)
 3. Click the settings icon in the top right and select `Install Add-on From File...`
 4. Navigate to the xpi file you downloaded in step 1 and select it
-5. Accept any prompt to install the add-on
+5. Accept any prompt to install the add-on.
 
 You may or may not want the extension to work in Incognito mode, this can be toggled by going into the extension Details page.
 
