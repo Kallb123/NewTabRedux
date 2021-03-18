@@ -22,6 +22,8 @@ The following steps will install the extension and automatically apply it as you
 4. Select the `Load unpacked` button in the top left
 5. Browse to the `Homely` folder that you downloaded in step 1 so that you can see the `lib` and `res` folders, then press OK to accept this folder.
 
+You may or may not want the extension to work in Incognito mode, this can be toggled by going into the extension Details page.
+
 ### Firefox
 
 1. Download the latest xpi file from the [Releases page](https://github.com/Kallb123/Homely/releases)
@@ -29,8 +31,6 @@ The following steps will install the extension and automatically apply it as you
 3. Click the settings icon in the top right and select `Install Add-on From File...`
 4. Navigate to the xpi file you downloaded in step 1 and select it
 5. Accept any prompt to install the add-on.
-
-You may or may not want the extension to work in Incognito mode, this can be toggled by going into the extension Details page.
 
 ## Usage
 
@@ -42,6 +42,13 @@ Alternatively, by hovering over the title of a block of links, you can click the
 
 This menu allows you to easily move blocks of links around without messing with JSON.
 The `Edit block` option opens a popup which allows you to edit the individual links and menus within each block (as well as adding more).
+
+### Import
+
+Whilst you can completely customise the setup manually, it is also possible to import a previous configuration from a backup or from somebody else.
+You can access this from the top right settings menu.
+Importing will override all settings, such as links and overall style.
+You can export a file to keep as a backup, this is important since all settings are stored within the browser and won't automatically transfer to a new browser or computer.
 
 ## Dependencies
 
