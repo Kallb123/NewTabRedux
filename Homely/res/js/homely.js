@@ -296,15 +296,17 @@ $(document).ready(function() {
                 let backgroundImage = null;
                 let query = "";
                 if (lastImage !== undefined && lastImage !== null) {
-                    let lastTime = Date.parse(lastImage.queryTime);
-                    if (!Number.isNaN(lastTime)) {
-                        let hoursSinceNewPhoto = (new Date() - lastTime) / MILLISECONDS_TO_HOURS;
-                        if (hoursSinceNewPhoto < UNSPLASH_REFRESH_INTERVAL_HOURS) {
-                            backgroundImage = lastImage.urls.full;
+                    if (lastImage.unsplash) {
+                        let lastTime = Date.parse(lastImage.queryTime);
+                        if (!Number.isNaN(lastTime)) {
+                            let hoursSinceNewPhoto = (new Date() - lastTime) / MILLISECONDS_TO_HOURS;
+                            if (hoursSinceNewPhoto < UNSPLASH_REFRESH_INTERVAL_HOURS) {
+                                backgroundImage = lastImage.urls.full;
+                            }
                         }
-                    }
-                    if (lastImage.lastQuery !== imageSetting) {
-                        backgroundImage = null;
+                        if (lastImage.lastQuery !== imageSetting) {
+                            backgroundImage = null;
+                        }
                     }
                 }
                 if (backgroundImage === null) {
@@ -333,6 +335,7 @@ $(document).ready(function() {
                             $(document.head).append($("<style/>").html(ajaxCSS.join("\n")));
                             resp.queryTime = (new Date()).toISOString();
                             resp.lastQuery = imageSetting;
+                            resp.unsplash = true;
                             settings.style["background"].lastImage = resp;
                             // write to local storage
                             chrome.storage.local.set(settings, function() {
