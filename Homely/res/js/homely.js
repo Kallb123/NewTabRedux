@@ -356,6 +356,63 @@ $(document).ready(function() {
                             + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
                             + "}");
                 }
+            } else if (imageSetting.substr(0,4) === "nasa") {
+                // https://api.nasa.gov/planetary/apod?api_key=QifgtiYGafK80FR7BzzpNPfyHjqxO564AuGnxfnb
+                let lastImage = settings.style["background"].lastImage;
+                let backgroundImage = null;
+                if (lastImage !== undefined && lastImage !== null) {
+                    if (lastImage.nasaDate) {
+                        let currentTime = new Date();
+                        let year = currentTime.getFullYear();
+                        let month = (currentTime.getMonth() + 1 + "").padStart(2, "0");
+                        let date = (currentTime.getDate() + "").padStart(2, "0");
+                        let todaysDate = `${year}-${month}-${date}`;
+                        if (lastImage.nasaDate === todaysDate) {
+                            backgroundImage = lastImage.hdurl;
+                        }
+                    }
+                }
+                if (backgroundImage === null) {
+                    $.ajax({
+                        url: `https://api.nasa.gov/planetary/apod?api_key=QifgtiYGafK80FR7BzzpNPfyHjqxO564AuGnxfnb`,
+                        dataType: "json",
+                        success: function(resp, stat, xhr) {
+                            let ajaxCSS = [];
+                            var backgroundImage = resp.hdurl;
+                            ajaxCSS.push("html {\n"
+                                    + "    background-image: url(" + backgroundImage + ");\n"
+                                    + "    background-repeat: " + (settings.style["background"].repeat ? "" : "no-") + "repeat;\n"
+                                    + "    background-position: " + (settings.style["background"].centre ? "center" : "initial") + ";\n"
+                                    + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
+                                    + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
+                                    + "}");
+                            $(document.head).append($("<style/>").html(ajaxCSS.join("\n")));
+                            resp.queryTime = (new Date()).toISOString();
+                            resp.lastQuery = imageSetting;
+                            resp.nasaDate = resp.date;
+                            settings.style["background"].lastImage = resp;
+                            // write to local storage
+                            chrome.storage.local.set(settings, function() {
+                                if (chrome.runtime.lastError) {
+                                    console.error("Unable to save after fetching NASA APOD background");
+                                    return;
+                                }
+                            });
+                            // ajaxCount(typeof(notif.include) === "boolean" && !notif.include ? [0] : counts);
+                        },
+                        error: function(xhr, stat, err) {
+                            // ajaxCount([0]);
+                        }
+                    });
+                } else {
+                    backgroundImageCSS.push("html {\n"
+                            + "    background-image: url(" + backgroundImage + ");\n"
+                            + "    background-repeat: " + (settings.style["background"].repeat ? "" : "no-") + "repeat;\n"
+                            + "    background-position: " + (settings.style["background"].centre ? "center" : "initial") + ";\n"
+                            + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
+                            + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
+                            + "}");
+                }
             } else {
                 backgroundImageCSS.push("html {\n"
                         + "    background-image: url(" + settings.style["background"].image + ");\n"
@@ -2420,14 +2477,23 @@ $(document).ready(function() {
                     var reader = new FileReader;
                     reader.readAsDataURL(file);
                     reader.onload = function readerLoaded() {
-                       $("#settings-style-background-image").data("val", reader.result).prop("placeholder", file.name).val("");
-                       $("#settings-style-background-file").val("");
+                        $("#settings-style-background-image").data("val", reader.result).prop("placeholder", file.name).val("");
+                        $("#settings-style-background-file").val("");
                     };
                 } else {
                     $("#settings-alerts").empty().append($("<div/>").addClass("alert alert-danger")
                                                                     .text(file.name + " doesn't seem to be a valid image file."));
                 }
             }
+        });
+        // NASA APOD
+        $("#settings-style-background-nasa").click(function(e) {
+            $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("nasa");
+            $("#settings-style-background-repeat").prop("checked", true);
+            $("#settings-style-background-centre").prop("checked", true);
+            $("#settings-style-background-fixed").prop("checked", false);
+            $("#settings-style-background-stretch").prop("checked", true);
+            $(".settings-style-background-check").prop("disabled", false).next().removeClass("text-muted");
         });
         // Unsplash query images
         $("#settings-style-background-unsplash-query").click(function(e) {
