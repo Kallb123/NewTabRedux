@@ -287,6 +287,14 @@ $(document).ready(function() {
         "weather": ["http://api.openweathermap.org/"],
         "proxy": ["http://www.whatismyproxy.com/"]
     };
+    var setGoogleEarthDetails = function setGoogleEarthDetails(data) {
+        let country = data.country ? data.country : data.geocode ? data.geocode.country : "Unknown country";
+        let locality = data.region ? data.region : data.geocode ? data.geocode.locality ? data.geocode.locality : "Unknown locality" : "Unknown locality";
+        let zoom = parseInt(data.zoom);
+        $('#settings-style-background-google-earth-details-location').html(`<a href="https://www.google.com/maps/@?api=1&map_action=map&center=${data.lat},${data.lng}&zoom=${zoom}&basemap=satellite" title="Open location in Google Maps" target="_blank">${locality}, ${country}</a>`);
+        $('#settings-style-background-google-earth-details-copyright').text(data.attribution);
+        $('#settings-style-background-google-earth-details').show();
+    };
     var fetchBackgroundImage = function fetchBackgroundImage() {
         let backgroundImageCSS = [];
         let imageSetting = settings.style["background"].image;
@@ -429,6 +437,7 @@ $(document).ready(function() {
                             let hoursSinceNewPhoto = (new Date() - lastTime) / MILLISECONDS_TO_HOURS;
                             if (hoursSinceNewPhoto < GOOGLE_EARTH_REFRESH_INTERVAL_HOURS) {
                                 backgroundImage = lastImage.dataUri;
+                                setGoogleEarthDetails(lastImage);
                             }
                         }
                     }
@@ -460,6 +469,7 @@ $(document).ready(function() {
                                     return;
                                 }
                             });
+                            setGoogleEarthDetails(resp);
                             // ajaxCount(typeof(notif.include) === "boolean" && !notif.include ? [0] : counts);
                         },
                         error: function(xhr, stat, err) {
