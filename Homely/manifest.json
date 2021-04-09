@@ -2,7 +2,7 @@
     "name": "Homely",
     "short_name": "Homely",
     "description": "A custom New Tab page, providing a quick, customizable layout of links and menus, as well as simple bookmark and history components.",
-    "version": "1.8.2",
+    "version": "1.9.0",
     "author": "Kallb123",
     "homepage_url": "https://github.com/Kallb123/Homely",
     "offline_enabled": true,
