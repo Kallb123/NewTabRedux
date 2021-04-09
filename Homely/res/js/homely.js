@@ -1,5 +1,6 @@
 const MILLISECONDS_TO_HOURS = 1000 * 60 * 60;
 const UNSPLASH_REFRESH_INTERVAL_HOURS = 3;
+const GOOGLE_EARTH_REFRESH_INTERVAL_HOURS = 1;
 
 $(document).ready(function() {
     // helper methods
@@ -398,6 +399,64 @@ $(document).ready(function() {
                             chrome.storage.local.set(settings, function() {
                                 if (chrome.runtime.lastError) {
                                     console.error("Unable to save after fetching NASA APOD background");
+                                    return;
+                                }
+                            });
+                            // ajaxCount(typeof(notif.include) === "boolean" && !notif.include ? [0] : counts);
+                        },
+                        error: function(xhr, stat, err) {
+                            // ajaxCount([0]);
+                        }
+                    });
+                } else {
+                    backgroundImageCSS.push("html {\n"
+                            + "    background-image: url(" + backgroundImage + ");\n"
+                            + "    background-repeat: " + (settings.style["background"].repeat ? "" : "no-") + "repeat;\n"
+                            + "    background-position: " + (settings.style["background"].centre ? "center" : "initial") + ";\n"
+                            + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
+                            + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
+                            + "}");
+                }
+            } else if (imageSetting.substr(0,12) === "google-earth") {
+                $("#settings-style-background-refresh").prop("disabled", false);
+                // https://www.gstatic.com/prettyearth/assets/data/v3/{imageID}.json
+                let lastImage = settings.style["background"].lastImage;
+                let backgroundImage = null;
+                if (lastImage !== undefined && lastImage !== null) {
+                    if (lastImage.googleEarth) {
+                        let lastTime = Date.parse(lastImage.queryTime);
+                        if (!Number.isNaN(lastTime)) {
+                            let hoursSinceNewPhoto = (new Date() - lastTime) / MILLISECONDS_TO_HOURS;
+                            if (hoursSinceNewPhoto < GOOGLE_EARTH_REFRESH_INTERVAL_HOURS) {
+                                backgroundImage = lastImage.dataUri;
+                            }
+                        }
+                    }
+                }
+                if (backgroundImage === null) {
+                    var randomImageID = googleEarthImageIds[Math.floor(Math.random() * googleEarthImageIds.length)];
+                    $.ajax({
+                        url: `https://www.gstatic.com/prettyearth/assets/data/v3/${randomImageID}.json`,
+                        dataType: "json",
+                        success: function(resp, stat, xhr) {
+                            let ajaxCSS = [];
+                            var backgroundImage = resp.dataUri;
+                            ajaxCSS.push("html {\n"
+                                    + "    background-image: url(" + backgroundImage + ");\n"
+                                    + "    background-repeat: " + (settings.style["background"].repeat ? "" : "no-") + "repeat;\n"
+                                    + "    background-position: " + (settings.style["background"].centre ? "center" : "initial") + ";\n"
+                                    + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
+                                    + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
+                                    + "}");
+                            $(document.head).append($("<style/>").html(ajaxCSS.join("\n")));
+                            resp.queryTime = (new Date()).toISOString();
+                            resp.lastQuery = imageSetting;
+                            resp.googleEarth = true;
+                            settings.style["background"].lastImage = resp;
+                            // write to local storage
+                            chrome.storage.local.set(settings, function() {
+                                if (chrome.runtime.lastError) {
+                                    console.error("Unable to save after fetching Google Earth background");
                                     return;
                                 }
                             });
@@ -2492,6 +2551,15 @@ $(document).ready(function() {
         // NASA APOD
         $("#settings-style-background-nasa").click(function(e) {
             $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("nasa");
+            $("#settings-style-background-repeat").prop("checked", true);
+            $("#settings-style-background-centre").prop("checked", true);
+            $("#settings-style-background-fixed").prop("checked", false);
+            $("#settings-style-background-stretch").prop("checked", true);
+            $(".settings-style-background-check").prop("disabled", false).next().removeClass("text-muted");
+        });
+        // Google Earth
+        $("#settings-style-background-google-earth").click(function(e) {
+            $("#settings-style-background-image").data("val", "landscape").prop("placeholder", "(unchanged)").val("google-earth");
             $("#settings-style-background-repeat").prop("checked", true);
             $("#settings-style-background-centre").prop("checked", true);
             $("#settings-style-background-fixed").prop("checked", false);
