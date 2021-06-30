@@ -26,7 +26,7 @@
         "management",
         "https://www.amazon.co.uk/",
         "https://www.amazon.com/",
-        "http://cart.payments.ebay.co.uk/",
+        "https://cart.payments.ebay.co.uk/",
         "https://www.facebook.com/", "https://m.facebook.com/",
         "https://github.com/",
         "https://accounts.google.com/", "https://mail.google.com/",
@@ -38,8 +38,8 @@
         "https://ticktick.com/",
         "https://trello.com/",
         "https://twitter.com/",
-        "http://api.openweathermap.org/",
-        "http://www.whatismyproxy.com/"
+        "https://api.openweathermap.org/",
+        "https://www.whatismyproxy.com/"
     ],
     "icons": {
         "16": "res/img/icon-16.png",

@@ -52,11 +52,11 @@ You can export a file to keep as a backup, this is important since all settings 
 
 ## Dependencies
 
-* [Bootstrap](http://getbootstrap.com)
-* [Font Awesome](http://fontawesome.io)
-* [jQuery](http://jquery.com)
-* [HTML5 Sortable](http://farhadi.ir/projects/html5sortable/)
-* [Mousetrap](http://craig.is/killing/mice)
+* [Bootstrap](https://getbootstrap.com)
+* [Font Awesome](https://fontawesome.io)
+* [jQuery](https://jquery.com)
+* [HTML5 Sortable](https://farhadi.ir/projects/html5sortable/)
+* [Mousetrap](https://craig.is/killing/mice)
 
 ## Keyboard shortcuts
 
@@ -136,7 +136,7 @@ A button can either be a simple link, or a dropdown containing many links.  Add 
 ```json
 {
     "title": "Google",
-    "url": "http://www.google.co.uk",
+    "url": "https://www.google.co.uk",
     "external": true,
     "style": "light"
 }
@@ -160,20 +160,20 @@ A menu is a list of links and headings, converted into groups of links (a new gr
 [
     {
         "title": "Worldwide",
-        "url": "http://www.google.com"
+        "url": "https://www.google.com"
     },
     {
         "title": "UK",
-        "url": "http://www.google.co.uk"
+        "url": "https://www.google.co.uk"
     },
     "Tools",
     {
         "title": "Images",
-        "url": "http://images.google.co.uk"
+        "url": "https://images.google.co.uk"
     },
     {
         "title": "Maps",
-        "url": "http://maps.google.co.uk",
+        "url": "https://maps.google.co.uk",
         "external": true
     }
 ]
@@ -181,13 +181,13 @@ A menu is a list of links and headings, converted into groups of links (a new gr
 
 With the above steps, you should end up with a block and dropdown like this:
 
-![Search Engines example](http://i.imgur.com/V6jkCoj.png)
+![Search Engines example](https://i.imgur.com/V6jkCoj.png)
 
 ## Notifications
 
 Enabling a notification option will prompt for the relevant permission in order to access the given website (and the corresponding block will be highlighted with green text).  Disabling it will not immediately remove this, but any unnecessary permissions will be dropped when settings are saved.
 
-In order to read arbitrary websites, the global permissions `http://*/` and/or `https://*/` must be granted.  If not (i.e. adding a permission just for a given site), it will be lost if the browser is restarted, unless explicitly declared in `optional_permissions` in the manifest (see [Chrome issue #158004](https://code.google.com/p/chromium/issues/detail?id=158004)).
+In order to read arbitrary websites, the global permissions `https://*/` and/or `https://*/` must be granted.  If not (i.e. adding a permission just for a given site), it will be lost if the browser is restarted, unless explicitly declared in `optional_permissions` in the manifest (see [Chrome issue #158004](https://code.google.com/p/chromium/issues/detail?id=158004)).
 
 > Note: if an option is later re-enabled, Chrome may not re-request the permission, however all currently granted permissions can be seen from Chrome's extension settings page (chrome://extensions).
 

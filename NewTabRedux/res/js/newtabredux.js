@@ -135,17 +135,17 @@ $(document).ready(function() {
                     "buttons": [
                         {
                             "title": "Lifehacker",
-                            "url": "http://lifehacker.com",
+                            "url": "https://lifehacker.com",
                             "style": "success"
                         },
                         {
                             "title": "AddictiveTips",
-                            "url": "http://www.addictivetips.com",
+                            "url": "https://www.addictivetips.com",
                             "style": "primary"
                         },
                         {
                             "title": "How-To Geek",
-                            "url": "http://www.howtogeek.com",
+                            "url": "https://www.howtogeek.com",
                             "style": "dark"
                         }
                     ]
@@ -272,7 +272,7 @@ $(document).ready(function() {
     var ajaxPerms = {
         "amazon-uk": ["https://www.amazon.co.uk/"],
         "amazon-usa": ["https://www.amazon.com/"],
-        "ebay": ["http://cart.payments.ebay.co.uk/"],
+        "ebay": ["https://cart.payments.ebay.co.uk/"],
         "facebook": ["https://www.facebook.com/", "https://m.facebook.com/"],
         "github": ["https://github.com/"],
         "gmail": ["https://accounts.google.com/", "https://mail.google.com/"],
@@ -284,8 +284,8 @@ $(document).ready(function() {
         "ticktick": ["https://ticktick.com/"],
         "trello": ["https://trello.com/"],
         "twitter": ["https://twitter.com/"],
-        "weather": ["http://api.openweathermap.org/"],
-        "proxy": ["http://www.whatismyproxy.com/"]
+        "weather": ["https://api.openweathermap.org/"],
+        "proxy": ["https://www.whatismyproxy.com/"]
     };
     var setGoogleEarthDetails = function setGoogleEarthDetails(data) {
         let country = data.country ? data.country : data.geocode ? data.geocode.country : "Unknown country";
@@ -534,7 +534,7 @@ $(document).ready(function() {
         // show current time in navbar
         if (settings.general["clock"].show) {
             var time = $("<div/>").attr("id", "time").addClass("navbar-brand");
-            $(".navbar-header").append($("<a/>").attr("href", "http://time.is").append(time));
+            $(".navbar-header").append($("<a/>").attr("href", "https://time.is").append(time));
             var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             var tick = function tick() {
@@ -711,7 +711,7 @@ $(document).ready(function() {
                     var loc = encodeURIComponent(settings.general["weather"].location);
                     var unit = (settings.general["weather"].celsius ? "metric" : "imperial");
                     $.ajax({
-                        url: "http://api.openweathermap.org/data/2.5/weather?APPID=833b8b2bb6161e0c2b43dab37d0c93a7&q=" + loc + "&units=" + unit,
+                        url: "https://api.openweathermap.org/data/2.5/weather?APPID=833b8b2bb6161e0c2b43dab37d0c93a7&q=" + loc + "&units=" + unit,
                         success: function success(resp, stat, xhr) {
                             var conds = [];
                             $.each(resp.weather, function(i, item) {
@@ -719,7 +719,7 @@ $(document).ready(function() {
                             });
                             var temp = Math.round(resp.main.temp);
                             var title = resp.name + ": " + cap((settings.style["topbar"].labels ? "" : temp + " degrees, ") + conds.join(", "));
-                            var link = $("<a/>").attr("id", "menu-weather").attr("href", "http://www.openweathermap.org/city/" + resp.id)
+                            var link = $("<a/>").attr("id", "menu-weather").attr("href", "https://www.openweathermap.org/city/" + resp.id)
                                                 .attr("title", title).hide();
                             link.append(fa("cloud", false)).append(label(temp + "&deg;" + (unit === "metric" ? "C" : "F"), settings));
                             // always show before proxy link if that loads first
@@ -751,10 +751,10 @@ $(document).ready(function() {
                 var link = $("<a/>").attr("id", "menu-proxy");
                 if (navigator.onLine) {
                     $.ajax({
-                        url: "http://www.whatismyproxy.com",
+                        url: "https://www.whatismyproxy.com",
                         success: function success(resp, stat, xhr) {
                             var params = $(".h1", resp).text().split("IP address: ");
-                            link.attr("href", "http://www.whatismyproxy.com").hide();
+                            link.attr("href", "https://www.whatismyproxy.com").hide();
                             link.append(fa(params[0] === "No proxies were detected." ? "desktop" : "exchange", false)).append(label(params[1], settings));
                             $("#menu-left").append($("<li/>").attr("id", "menu-proxy").append(link));
                             link.fadeIn();
@@ -2158,7 +2158,7 @@ $(document).ready(function() {
                 "ebay": {
                     title: "eBay",
                     icon: "shopping-bag",
-                    api: "http://cart.payments.ebay.co.uk/sc/view",
+                    api: "https://cart.payments.ebay.co.uk/sc/view",
                     count: function(basket, resp) {
                         var text = $(".cartsummarytitle", resp).next().text();
                         if (text === "") return 0;
