@@ -1,6 +1,6 @@
-# Homely
+# New Tab Redux
 
-Homely is a custom New Tab page replacement for Google Chrome and Mozilla Firefox (other browsers, especially Chromium-based ones, will probably work too).
+New Tab Redux is a custom New Tab page replacement for Google Chrome and Mozilla Firefox (other browsers, especially Chromium-based ones, will probably work too).
 It aims to provide a quick, customizable layout of links and menus, as well as simple bookmarks and history components.
 There are a variety of optional extras as well, including:
 
@@ -11,22 +11,22 @@ There are a variety of optional extras as well, including:
 
 ## Installation
 
-Homely is built as a browser extension that replaces the New Tab page.
+New Tab Redux is built as a browser extension that replaces the New Tab page.
 The following steps will install the extension and automatically apply it as your New Tab page.
 
 ### Chrome
 
-1. Clone the repository to your computer, or [download it as a ZIP](https://github.com/Kallb123/Homely/archive/master.zip) then extract it somewhere it can stay permanently
+1. Clone the repository to your computer, or [download it as a ZIP](https://github.com/Kallb123/NewTabRedux/archive/master.zip) then extract it somewhere it can stay permanently
 2. Open the Chrome `Extension` settings by navigating the menus or visiting [chrome://extensions/](chrome://extensions/)
 3. Enable the `Developer mode` toggle in the top right
 4. Select the `Load unpacked` button in the top left
-5. Browse to the `Homely` folder that you downloaded in step 1 so that you can see the `lib` and `res` folders, then press OK to accept this folder.
+5. Browse to the `New Tab Redux` folder that you downloaded in step 1 so that you can see the `lib` and `res` folders, then press OK to accept this folder.
 
 You may or may not want the extension to work in Incognito mode, this can be toggled by going into the extension Details page.
 
 ### Firefox
 
-1. Download the latest xpi file from the [Releases page](https://github.com/Kallb123/Homely/releases)
+1. Download the latest xpi file from the [Releases page](https://github.com/Kallb123/NewTabRedux/releases)
 2. Open the Firefox `Addons` page by using the menu in the top right or by visiting [about:addons](about:addons)
 3. Click the settings icon in the top right and select `Install Add-on From File...`
 4. Navigate to the xpi file you downloaded in step 1 and select it
@@ -197,4 +197,4 @@ The Gmail notifier can be configured for multiple accounts by specifying the use
 
 ## Incognito mode
 
-If Homely is allowed to run in incognito mode, it will also display as the New Tab page of incognito windows.  It shares settings with normal windows, however history and notifications are disabled.
+If New Tab Redux is allowed to run in incognito mode, it will also display as the New Tab page of incognito windows.  It shares settings with normal windows, however history and notifications are disabled.

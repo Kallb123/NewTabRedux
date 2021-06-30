@@ -1,13 +1,13 @@
 {
-    "name": "Homely",
-    "short_name": "Homely",
+    "name": "New Tab Redux",
+    "short_name": "New Tab Redux",
     "description": "A custom New Tab page, providing a quick, customizable layout of links and menus, as well as simple bookmark and history components.",
     "version": "1.9.0",
     "author": "Kallb123",
-    "homepage_url": "https://github.com/Kallb123/Homely",
+    "homepage_url": "https://github.com/Kallb123/NewTabRedux",
     "offline_enabled": true,
     "chrome_url_overrides": {
-        "newtab": "res/html/homely.html"
+        "newtab": "res/html/newtabredux.html"
     },
     "omnibox": {
         "keyword": "hl"

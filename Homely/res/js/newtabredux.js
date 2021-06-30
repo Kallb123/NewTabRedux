@@ -2906,7 +2906,7 @@ $(document).ready(function() {
         // export settings to file
         $("#settings-export").click(function(e) {
             var toExport = $.extend(true, {}, settings);
-            // link has a download="homely.json" tag to force download
+            // link has a download="newtabredux.json" tag to force download
             $(this).attr("href", "data:application/json;charset=UTF-8," + encodeURIComponent(JSON.stringify(toExport)))
                    .click().attr("href", "");
         });
