@@ -291,7 +291,13 @@ $(document).ready(function() {
         let country = data.country ? data.country : data.geocode ? data.geocode.country : "Unknown country";
         let locality = data.region ? data.region : data.geocode ? data.geocode.locality ? data.geocode.locality : "Unknown locality" : "Unknown locality";
         let zoom = parseInt(data.zoom);
-        $('#settings-style-background-google-earth-details-location').html(`<a href="https://www.google.com/maps/@?api=1&map_action=map&center=${data.lat},${data.lng}&zoom=${zoom}&basemap=satellite" title="Open location in Google Maps" target="_blank">${locality}, ${country}</a>`);
+        let googleEarthDetails = $('<a />', {
+            title: "Open location in Google Maps",
+            target: "_blank",
+            href: `https://www.google.com/maps/@?api=1&map_action=map&center=${data.lat},${data.lng}&zoom=${zoom}&basemap=satellite`,
+            text: `${locality}, ${country}`
+        });
+        $('#settings-style-background-google-earth-details-location').empty().append(googleEarthDetails);
         $('#settings-style-background-google-earth-details-copyright').text(data.attribution);
         $('#settings-style-background-google-earth-details').show();
     };
@@ -341,7 +347,7 @@ $(document).ready(function() {
                                     + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
                                     + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
                                     + "}");
-                            $(document.head).append($("<style/>").html(ajaxCSS.join("\n")));
+                            $(document.head).append($("<style/>").text(ajaxCSS.join("\n")));
                             resp.queryTime = (new Date()).toISOString();
                             resp.lastQuery = imageSetting;
                             resp.unsplash = true;
@@ -398,7 +404,7 @@ $(document).ready(function() {
                                     + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
                                     + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
                                     + "}");
-                            $(document.head).append($("<style/>").html(ajaxCSS.join("\n")));
+                            $(document.head).append($("<style/>").text(ajaxCSS.join("\n")));
                             resp.queryTime = (new Date()).toISOString();
                             resp.lastQuery = imageSetting;
                             resp.nasaDate = resp.date;
@@ -457,7 +463,7 @@ $(document).ready(function() {
                                     + "    background-attachment: " + (settings.style["background"].fixed ? "fixed" : "initial") + ";\n"
                                     + "    background-size: " + (settings.style["background"].stretch ? "cover" : "auto") + ";\n"
                                     + "}");
-                            $(document.head).append($("<style/>").html(ajaxCSS.join("\n")));
+                            $(document.head).append($("<style/>").text(ajaxCSS.join("\n")));
                             resp.queryTime = (new Date()).toISOString();
                             resp.lastQuery = imageSetting;
                             resp.googleEarth = true;
@@ -496,7 +502,7 @@ $(document).ready(function() {
             }
         }
         if (backgroundImageCSS.length) {
-            $(document.head).append($("<style/>").html(backgroundImageCSS.join("\n")));
+            $(document.head).append($("<style/>").text(backgroundImageCSS.join("\n")));
         }
     }
     // load settings
@@ -526,10 +532,10 @@ $(document).ready(function() {
         }
         fetchBackgroundImage();
         if (css.length) {
-            $(document.head).append($("<style/>").html(css.join("\n")));
+            $(document.head).append($("<style/>").text(css.join("\n")));
         }
         if (settings.style["customcss"].enable) {
-            $(document.head).append($("<style/>").html(settings.style["customcss"].content));
+            $(document.head).append($("<style/>").text(settings.style["customcss"].content));
         }
         // show current time in navbar
         if (settings.general["clock"].show) {
