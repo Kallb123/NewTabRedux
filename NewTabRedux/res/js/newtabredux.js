@@ -301,6 +301,7 @@ $(document).ready(function() {
         $('#settings-style-background-google-earth-details-copyright').text(data.attribution);
         $('#settings-style-background-google-earth-details').show();
     };
+
     var fetchBackgroundImage = function fetchBackgroundImage() {
         let backgroundImageCSS = [];
         let imageSetting = settings.style["background"].image;
@@ -1048,7 +1049,7 @@ $(document).ready(function() {
                     body.append(btn);
                 });
                 blk.append(body);
-                $("#links").append($("<div/>").addClass("col-lg-2 col-md-3 col-sm-4 col-xs-6").append(blk));
+                $("#links").append($("<div/>").addClass("panelWrapper").append(blk));
             });
             // drag block headings to reorder
             if (settings.links["edit"].dragdrop) {
@@ -1063,6 +1064,7 @@ $(document).ready(function() {
                 });
             }
             fixLinkHandling();
+            resizeAllGridItems();
         };
         populateLinks();
         // generate editor modal
@@ -3153,5 +3155,24 @@ $(document).ready(function() {
         if (chrome.extension.inIncognitoContext) $(".incognito").removeClass("incognito");
         // fade in once all is loaded
         $(document.body).fadeIn();
+        resizeAllGridItems();
     });
-});
+
+    resizeAllGridItems();
+    window.addEventListener("resize", resizeAllGridItems);
+})
+
+var resizeGridItem = function resizeGridItem(item) {
+    grid = document.getElementById("links");
+    rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+    rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
+    rowSpan = Math.ceil((item.querySelector('.panel').getBoundingClientRect().height+rowGap)/(rowHeight+rowGap));
+    item.style.gridRowEnd = "span "+rowSpan;
+};
+
+var resizeAllGridItems = function resizeAllGridItems(){
+    allItems = document.getElementsByClassName("panelWrapper");
+    for(x=0;x<allItems.length;x++){
+       resizeGridItem(allItems[x]);
+    }
+}

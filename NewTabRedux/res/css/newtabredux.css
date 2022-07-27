@@ -96,6 +96,18 @@ a {
 .modal-title input.input-lg {
     width: 90%;
 }
+#links {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+    grid-auto-rows: 10px;
+}
+#links .panelWrapper {
+
+}
+#links .panel {
+    
+}
 #links .panel-body .btn {
     white-space: normal;
 }
