@@ -198,3 +198,17 @@ The Gmail notifier can be configured for multiple accounts by specifying the use
 ## Incognito mode
 
 If New Tab Redux is allowed to run in incognito mode, it will also display as the New Tab page of incognito windows.  It shares settings with normal windows, however history and notifications are disabled.
+
+## Building
+
+### Chrome
+
+Create a zip file of the extension folder (manifest, lib, res), this can be uploaded to the Web Store.
+The folder itself can be loaded into Chrome if not using the Web Store.
+
+### Firefox
+
+Create a zip file of the extension (manifest, lib, res), this can then be uploaded to the Mozilla Addon Store.
+An XPI file must be created and signed in order to use the extension locally without using the store:
+
+1. Instructions TBC
