@@ -211,4 +211,8 @@ The folder itself can be loaded into Chrome if not using the Web Store.
 Create a zip file of the extension (manifest, lib, res), this can then be uploaded to the Mozilla Addon Store.
 An XPI file must be created and signed in order to use the extension locally without using the store:
 
-1. Instructions TBC
+1. Install NodeJS 16+: `curl -sL https://deb.nodesource.com/setup_16.x | sudo bash -`
+2. Install NPM (if not already included): `sudo apt-get install npm`
+3. Install web-ext toolset: `sudo npm install --global web-ext`
+4. Request signed extension: `sudo web-ext sign --api-key="XXX" --api-secret="XXX"`
+5. XPI is in the `web-ext-artifacts` folder.
