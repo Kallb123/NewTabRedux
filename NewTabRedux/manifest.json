@@ -2,7 +2,7 @@
     "name": "New Tab Redux",
     "short_name": "New Tab Redux",
     "description": "A custom New Tab page, providing a quick, customizable layout of links and menus, as well as simple bookmark and history components.",
-    "version": "1.13.0",
+    "version": "1.14.2",
     "author": "Kallb123",
     "homepage_url": "https://github.com/Kallb123/NewTabRedux",
     "offline_enabled": true,
@@ -39,7 +39,8 @@
         "https://trello.com/",
         "https://twitter.com/",
         "https://api.openweathermap.org/",
-        "https://www.whatismyproxy.com/"
+        "https://www.whatismyproxy.com/",
+        "*://*/"
     ],
     "icons": {
         "16": "res/img/icon-16.png",

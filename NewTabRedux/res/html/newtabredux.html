@@ -41,7 +41,7 @@
                             <ul id="baskets-list" class="dropdown-menu"></ul>
                         </li>
                         <li id="menu-notifs" class="dropdown">
-                            <a id="notifs-title" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell-o"></i> <span class="menu-label">Notifications</span> <span class="badge">0</span> <b class="caret"></b></a>
+                            <a id="notifs-title" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <span class="menu-label">Notifications</span> <span class="badge">0</span> <b class="caret"></b></a>
                             <ul id="notifs-list" class="dropdown-menu"></ul>
                         </li>
                         <li id="menu-settings" class="dropdown">
@@ -106,7 +106,7 @@
                             <li class="active"><a data-toggle="tab" data-target="#settings-tab-links"><i class="fa fa-link"></i> <span class="hidden-sm">Links</span></a></li>
                             <li><a data-toggle="tab" data-target="#settings-tab-bookmarks"><i class="fa fa-bookmark"></i> <span class="hidden-sm">Bookmarks</span></a></li>
                             <li><a data-toggle="tab" data-target="#settings-tab-history"><i class="fa fa-history"></i> <span class="hidden-sm">History</span></a></li>
-                            <li><a data-toggle="tab" data-target="#settings-tab-notifs"><i class="fa fa-bell-o"></i> <span class="hidden-sm">Notifications</span></a></li>
+                            <li><a data-toggle="tab" data-target="#settings-tab-notifs"><i class="fa fa-bell"></i> <span class="hidden-sm">Notifications</span></a></li>
                             <li><a data-toggle="tab" data-target="#settings-tab-baskets"><i class="fa fa-shopping-basket"></i> <span class="hidden-sm">Baskets</span></a></li>
                             <li><a data-toggle="tab" data-target="#settings-tab-general"><i class="fa fa-star"></i> <span class="hidden-sm">General</span></a></li>
                             <li><a data-toggle="tab" data-target="#settings-tab-style"><i class="fa fa-paint-brush"></i> <span class="hidden-sm">Style</span></a></li>
@@ -249,6 +249,16 @@
                                         </label>
                                     </div>
                                 </div>
+                                <div class="form-group settings-perm" data-key="github-local">
+                                    <label class="col-sm-3 control-label">GitHub Enterprise</label>
+                                    <div class="col-sm-8">
+                                        <label class="checkbox-inline">
+                                            <input id="settings-notifs-github-local-enable" type="checkbox">
+                                            <span>Notifications</span>
+                                        </label>
+                                        <input id="settings-notifs-github-local-host" type="text" class="form-control" placeholder="">
+                                    </div>
+                                </div>
                                 <div class="form-group form-control-nomar-bottom settings-perm" data-key="gmail">
                                     <label class="col-sm-3 control-label">Gmail</label>
                                     <div class="col-sm-8 form-control-pad-bottom">
@@ -258,6 +268,16 @@
                                         </label>
                                         <input id="settings-notifs-gmail-accounts" type="text" class="form-control input-sm input-inline" placeholder="Accounts">
                                         <p class="help-block">If signed in to multiple Google accounts, enter a comma separated list of user IDs to count emails individually (check a Google URL for <code>?authuser=<strong>X</strong></code> or <code>/u/<strong>X</strong>/</code>).</p>
+                                    </div>
+                                </div>
+                                <div class="form-group settings-perm" data-key="jira">
+                                    <label class="col-sm-3 control-label">Jira</label>
+                                    <div class="col-sm-8">
+                                        <label class="checkbox-inline">
+                                            <input id="settings-notifs-jira-enable" type="checkbox">
+                                            <span>Notifications</span>
+                                        </label>
+                                        <input id="settings-notifs-jira-host" type="text" class="form-control" placeholder="">
                                     </div>
                                 </div>
                                 <div class="form-group settings-perm" data-key="linkedin">

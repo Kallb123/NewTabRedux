@@ -175,9 +175,17 @@ $(document).ready(function() {
             "github": {
                 "enable": false
             },
+            "github-local": {
+                "enable": false,
+                "host": ""
+            },
             "gmail": {
                 "enable": false,
                 "accounts": []
+            },
+            "jira": {
+                "enable": false,
+                "host": ""
             },
             "linkedin": {
                 "enable": {
@@ -1803,7 +1811,23 @@ $(document).ready(function() {
                         }];
                     },
                     count: function(notif, resp) {
-                        return [parseInt($(".count", resp).length ? $($(".count", resp)[0]).text() : "")];
+                        let counts = $(".count", resp);
+                        return [parseInt(counts.length && $(counts[0]).text() ? $(counts[0]).text() : "0")];
+                    }
+                },
+                "github-local": {
+                    title: "GitHub Enterprise",
+                    icon: "github",
+                    api: `${settings.notifs["github-local"].host}notifications`,
+                    items: function(notif) {
+                        return [{
+                            title: "Notifications",
+                            url: `${notif.host}notifications`
+                        }];
+                    },
+                    count: function(notif, resp) {
+                        let counts = $(".count", resp);
+                        return [parseInt(counts.length && $(counts[0]).text() ? $(counts[0]).text() : "0")];
                     }
                 },
                 "gmail": {
@@ -1831,6 +1855,21 @@ $(document).ready(function() {
                             });
                         }
                         return menu;
+                    }
+                },
+                "jira": {
+                    title: "Jira",
+                    icon: "jira",
+                    api: `${settings.notifs["jira"].host}jira/your-work`,
+                    items: function(notif) {
+                        return [{
+                            title: "My Tickets",
+                            url: `${notif.host}jira/your-work`
+                        }];
+                    },
+                    count: function(notif, resp) {
+                        let counts = $("#your-work-page-tabs-2 span span span span", resp);
+                        return [parseInt(counts.length && $(counts[0]).text() ? $(counts[0]).text() : "0")];
                     }
                 },
                 "linkedin": {
@@ -1999,8 +2038,13 @@ $(document).ready(function() {
                     // check permissions exist
                     pendingPerm++;
                     has = true;
+                    let origin = ajaxPerms[key];
+                    if (!origin) {
+                        origin = [notif.host];
+                    }
+                    if (!origin) return;
                     chrome.permissions.contains({
-                        origins: ajaxPerms[key]
+                        origins: origin
                     }, function(has) {
                         if (has) {
                             var handle = handlers[key];
@@ -2283,8 +2327,12 @@ $(document).ready(function() {
             $("#settings-notifs-facebook-messages").prop("checked", settings.notifs["facebook"].enable.messages);
             $("#settings-notifs-facebook-friends").prop("checked", settings.notifs["facebook"].enable.friends);
             $("#settings-notifs-github-enable").prop("checked", settings.notifs["github"].enable);
+            $("#settings-notifs-github-local-enable").prop("checked", settings.notifs["github-local"].enable);
+            $("#settings-notifs-github-local-host").val(settings.notifs["github-local"].host);
             $("#settings-notifs-gmail-enable").prop("checked", settings.notifs["gmail"].enable);
             $("#settings-notifs-gmail-accounts").prop("disabled", !settings.notifs["gmail"].enable).val(settings.notifs["gmail"].accounts.join(", "));
+            $("#settings-notifs-jira-enable").prop("checked", settings.notifs["jira"].enable);
+            $("#settings-notifs-jira-host").val(settings.notifs["jira"].host);
             $("#settings-notifs-linkedin-messages").prop("checked", settings.notifs["linkedin"].enable.messages);
             $("#settings-notifs-linkedin-notifs").prop("checked", settings.notifs["linkedin"].enable.notifs);
             $("#settings-notifs-linkedin-invites").prop("checked", settings.notifs["linkedin"].enable.invites);
@@ -2311,10 +2359,15 @@ $(document).ready(function() {
             // highlight notif/basket permissions status
             $(".settings-perm").each(function(i, group) {
                 var key = $(group).data("key");
+                let origin = ajaxPerms[key];
+                if (!origin) {
+                    origin = [settings.notifs[key].host];
+                }
+                if (!origin) return;
                 chrome.permissions.contains({
-                    origins: ajaxPerms[key]
+                    origins: origin
                 }, function(has) {
-                    if (has) {
+                    if (has && origin) {
                         $(group).addClass("has-success");
                     } else {
                         $(group).addClass("has-warning");
@@ -2475,7 +2528,12 @@ $(document).ready(function() {
             $("#settings-alerts").empty();
             // grant requried permissions for provider
             var id = this.id;
-            var perms = ajaxPerms[$("#" + id).closest(".settings-perm").data("key")];
+            let key = $("#" + id).closest(".settings-perm").data("key");
+            var perms = ajaxPerms[key];
+            if (!perms) {
+                perms = [settings.notifs[key].host];
+            }
+            if (!perms) return;
             if (this.checked) {
                 chrome.permissions.request({
                     origins: perms
@@ -2728,6 +2786,10 @@ $(document).ready(function() {
             settings.notifs["github"] = {
                 enable: $("#settings-notifs-github-enable").prop("checked")
             };
+            settings.notifs["github-local"] = {
+                enable: $("#settings-notifs-github-local-enable").prop("checked"),
+                host: $("#settings-notifs-github-local-host").val()
+            };
             var accounts = $("#settings-notifs-gmail-accounts").val().replace(/[^0-9,]/g, "");
             if (accounts) {
                 accounts = accounts.split(",");
@@ -2741,6 +2803,10 @@ $(document).ready(function() {
             settings.notifs["gmail"] = {
                 enable: $("#settings-notifs-gmail-enable").prop("checked"),
                 accounts: accounts.sort()
+            };
+            settings.notifs["jira"] = {
+                enable: $("#settings-notifs-jira-enable").prop("checked"),
+                host: $("#settings-notifs-jira-host").val()
             };
             settings.notifs["linkedin"] = {
                 enable: {
