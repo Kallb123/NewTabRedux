@@ -1733,15 +1733,19 @@ $(document).ready(function() {
                 }
                 // only once all complete
                 if (--pendingAjax) return;
-                refreshLink.empty().append(fa("refresh")).append(" Refresh").off("click").click(function (e) {
-                    $("#notifs-title i").removeClass("fa-bell").addClass("fa-bell-o");
-                    $("#notifs-title .badge").text("0");
-                    document.title = settings.general["title"];
-                    $("#notifs-list").empty();
-                    notifRefresh();
-                    e.stopPropagation();
-                });
-                refreshLink.parent().removeClass("disabled");
+                try {
+                    refreshLink.empty().append(fa("refresh")).append(" Refresh").off("click").click(function (e) {
+                        $("#notifs-title i").removeClass("fa-bell").addClass("fa-bell-o");
+                        $("#notifs-title .badge").text("0");
+                        document.title = settings.general["title"];
+                        $("#notifs-list").empty();
+                        notifRefresh();
+                        e.stopPropagation();
+                    });
+                    refreshLink.parent().removeClass("disabled");
+                } catch (error) {
+                    console.log(error);
+                }
             };
             /*
             handlers = {
@@ -2036,59 +2040,36 @@ $(document).ready(function() {
                 }
                 if (enabled) {
                     // check permissions exist
-                    pendingPerm++;
-                    has = true;
                     let origin = ajaxPerms[key];
                     if (!origin) {
-                        origin = [notif.host];
+                        if (notif.host) {
+                            origin = [notif.host];
+                        }
                     }
                     if (!origin) return;
-                    chrome.permissions.contains({
-                        origins: origin
-                    }, function(has) {
-                        if (has) {
-                            var handle = handlers[key];
-                            // add menu items
-                            $("#notifs-list").append($("<li/>").addClass("dropdown-header").append(fa(handle.icon)).append("&nbsp; " + handle.title));
-                            var menu = [];
-                            var items = handle.items(notif);
-                            $(items).each(function(i, item) {
-                                var link = $("<a/>").attr("href", item.url).text(item.title);
-                                $("#notifs-list").append($("<li/>").append(link));
-                                menu.push(link);
-                            });
-                            $("#notifs-list").append($("<li/>").addClass("divider"));
-                            if (handle.api) {
-                                // single API call for all items
-                                pendingAjax++;
-                                $.ajax({
-                                    url: handle.api,
-                                    headers: handle.headers,
-                                    dataType: handle.format,
-                                    success: function(resp, stat, xhr) {
-                                        if (typeof(resp) === "string") {
-                                            resp = resp.replace(/<img[\S\s]*?>/g, "").replace(/<script[\S\s]*?>[\S\s]*?<\/script>/g, "");
-                                            resp = resp.replace(/on[a-z]*="[\S\s]*?"/g, "");
-                                        }
-                                        var counts = handle.count(notif, resp);
-                                        for (var i in menu) {
-                                            menu[i].append($("<span/>").addClass("badge pull-right").text(isNaN(counts[i]) ? "?" : counts[i]));
-                                        }
-                                        ajaxCount(typeof(notif.include) === "boolean" && !notif.include ? [0] : counts);
-                                    },
-                                    error: function(xhr, stat, err) {
-                                        for (var i in menu) {
-                                            menu[i].append($("<span/>").addClass("badge pull-right").text("?"));
-                                        }
-                                        ajaxCount([0]);
-                                    }
-                                });
-                            } else {
-                                // API call for each item
+                    pendingPerm++;
+                    has = true;
+                    try {
+                        chrome.permissions.contains({
+                            origins: origin
+                        }, function(has) {
+                            if (has) {
+                                var handle = handlers[key];
+                                // add menu items
+                                $("#notifs-list").append($("<li/>").addClass("dropdown-header").append(fa(handle.icon)).append("&nbsp; " + handle.title));
+                                var menu = [];
+                                var items = handle.items(notif);
                                 $(items).each(function(i, item) {
+                                    var link = $("<a/>").attr("href", item.url).text(item.title);
+                                    $("#notifs-list").append($("<li/>").append(link));
+                                    menu.push(link);
+                                });
+                                $("#notifs-list").append($("<li/>").addClass("divider"));
+                                if (handle.api) {
+                                    // single API call for all items
                                     pendingAjax++;
                                     $.ajax({
-                                        url: item.api,
+                                        url: handle.api,
                                         headers: handle.headers,
                                         dataType: handle.format,
                                         success: function(resp, stat, xhr) {
@@ -2096,30 +2077,60 @@ $(document).ready(function() {
                                                 resp = resp.replace(/<img[\S\s]*?>/g, "").replace(/<script[\S\s]*?>[\S\s]*?<\/script>/g, "");
                                                 resp = resp.replace(/on[a-z]*="[\S\s]*?"/g, "");
                                             }
-                                            var count = item.count(notif, resp);
-                                            menu[i].prepend($("<span/>").addClass("badge pull-right").text(isNaN(count) ? "?" : count));
-                                            ajaxCount([count]);
+                                            var counts = handle.count(notif, resp);
+                                            for (var i in menu) {
+                                                menu[i].append($("<span/>").addClass("badge pull-right").text(isNaN(counts[i]) ? "?" : counts[i]));
+                                            }
+                                            ajaxCount(typeof(notif.include) === "boolean" && !notif.include ? [0] : counts);
                                         },
                                         error: function(xhr, stat, err) {
-                                            menu[i].prepend($("<span/>").addClass("badge pull-right").text("?"));
+                                            for (var i in menu) {
+                                                menu[i].append($("<span/>").addClass("badge pull-right").text("?"));
+                                            }
                                             ajaxCount([0]);
                                         }
                                     });
-                                });
-                            }
-                            pendingCount();
-                        } else {
-                            // permission not available
-                            if (typeof(notif.enable) === "string") {
-                                notif.enable = false;
-                            } else {
-                                for (var x in notif.enable) {
-                                    notif.enable[x] = false;
+                                } else {
+                                    // API call for each item
+                                    $(items).each(function(i, item) {
+                                        pendingAjax++;
+                                        $.ajax({
+                                            url: item.api,
+                                            headers: handle.headers,
+                                            dataType: handle.format,
+                                            success: function(resp, stat, xhr) {
+                                                if (typeof(resp) === "string") {
+                                                    resp = resp.replace(/<img[\S\s]*?>/g, "").replace(/<script[\S\s]*?>[\S\s]*?<\/script>/g, "");
+                                                    resp = resp.replace(/on[a-z]*="[\S\s]*?"/g, "");
+                                                }
+                                                var count = item.count(notif, resp);
+                                                menu[i].prepend($("<span/>").addClass("badge pull-right").text(isNaN(count) ? "?" : count));
+                                                ajaxCount([count]);
+                                            },
+                                            error: function(xhr, stat, err) {
+                                                menu[i].prepend($("<span/>").addClass("badge pull-right").text("?"));
+                                                ajaxCount([0]);
+                                            }
+                                        });
+                                    });
                                 }
+                                pendingCount();
+                            } else {
+                                // permission not available
+                                if (typeof(notif.enable) === "string") {
+                                    notif.enable = false;
+                                } else {
+                                    for (var x in notif.enable) {
+                                        notif.enable[x] = false;
+                                    }
+                                }
+                                pendingCount();
                             }
-                            pendingPerm--;
-                        }
-                    });
+                        });
+                    } catch (error) {
+                        console.error(error);
+                        pendingCount();
+                    }
                 }
             });
         };
@@ -2232,45 +2243,50 @@ $(document).ready(function() {
                     // check permissions exist
                     pendingPerm++;
                     has = true;
-                    chrome.permissions.contains({
-                        origins: ajaxPerms[key]
-                    }, function(has) {
-                        if (has) {
-                            var handle = handlers[key];
-                            // add menu item
-                            var link = $("<a/>").attr("href", handle.api).append(fa(handle.icon)).append(" ")
-                                                                         .append($("<span/>").addClass("title").text(handle.title));
-                            $("#baskets-list").append($("<li/>").append(link));
-                            pendingAjax++;
-                            $.ajax({
-                                url: handle.api,
-                                success: function(resp, stat, xhr) {
-                                    if (typeof(resp) === "string") {
-                                        resp = resp.replace(/<img[\S\s]*?>/g, "").replace(/<script[\S\s]*?>[\S\s]*?<\/script>/g, "");
-                                        resp = resp.replace(/on[a-z]*="[\S\s]*?"/g, "");
+                    try {
+                        chrome.permissions.contains({
+                            origins: ajaxPerms[key]
+                        }, function(has) {
+                            if (has) {
+                                var handle = handlers[key];
+                                // add menu item
+                                var link = $("<a/>").attr("href", handle.api).append(fa(handle.icon)).append(" ")
+                                                                             .append($("<span/>").addClass("title").text(handle.title));
+                                $("#baskets-list").append($("<li/>").append(link));
+                                pendingAjax++;
+                                $.ajax({
+                                    url: handle.api,
+                                    success: function(resp, stat, xhr) {
+                                        if (typeof(resp) === "string") {
+                                            resp = resp.replace(/<img[\S\s]*?>/g, "").replace(/<script[\S\s]*?>[\S\s]*?<\/script>/g, "");
+                                            resp = resp.replace(/on[a-z]*="[\S\s]*?"/g, "");
+                                        }
+                                        var count = handle.count(basket, resp);
+                                        link.prepend($("<span/>").addClass("badge pull-right").text(isNaN(count) ? "?" : count));
+                                        ajaxCount(typeof(basket.include) === "boolean" && !basket.include ? 0 : count);
+                                    },
+                                    error: function(xhr, stat, err) {
+                                        link.prepend($("<span/>").addClass("badge pull-right").text("?"));
+                                        ajaxCount(0);
                                     }
-                                    var count = handle.count(basket, resp);
-                                    link.prepend($("<span/>").addClass("badge pull-right").text(isNaN(count) ? "?" : count));
-                                    ajaxCount(typeof(basket.include) === "boolean" && !basket.include ? 0 : count);
-                                },
-                                error: function(xhr, stat, err) {
-                                    link.prepend($("<span/>").addClass("badge pull-right").text("?"));
-                                    ajaxCount(0);
-                                }
-                            });
-                            pendingCount();
-                        } else {
-                            // permission not available
-                            if (typeof(basket.enable) === "string") {
-                                basket.enable = false;
+                                });
+                                pendingCount();
                             } else {
-                                for (var x in basket.enable) {
-                                    basket.enable[x] = false;
+                                // permission not available
+                                if (typeof(basket.enable) === "string") {
+                                    basket.enable = false;
+                                } else {
+                                    for (var x in basket.enable) {
+                                        basket.enable[x] = false;
+                                    }
                                 }
+                                pendingPerm--;
                             }
-                            pendingPerm--;
-                        }
-                    });
+                        });
+                    } catch (error) {
+                        console.error(error);
+                        pendingCount();
+                    }
                 }
             });
         };
@@ -2361,19 +2377,26 @@ $(document).ready(function() {
                 var key = $(group).data("key");
                 let origin = ajaxPerms[key];
                 if (!origin) {
-                    origin = [settings.notifs[key].host];
+                    let notifHost = settings.notifs[key].host;
+                    if (notifHost) {
+                        origin = [notifHost];
+                    }
                 }
                 if (!origin) return;
-                chrome.permissions.contains({
-                    origins: origin
-                }, function(has) {
-                    if (has && origin) {
-                        $(group).addClass("has-success");
-                    } else {
-                        $(group).addClass("has-warning");
-                        $("input[type=checkbox]", group).prop("checked", false);
-                    }
-                })
+                try {
+                    chrome.permissions.contains({
+                        origins: origin
+                    }, function(has) {
+                        if (has && origin) {
+                            $(group).addClass("has-success");
+                        } else {
+                            $(group).addClass("has-warning");
+                            $("input[type=checkbox]", group).prop("checked", false);
+                        }
+                    });
+                } catch (error) {
+                    console.error(error)
+                }
             });
             $("#settings-general-title").val(settings.general["title"]);
             $("#settings-general-keyboard").prop("checked", settings.general["keyboard"]);
@@ -2531,22 +2554,29 @@ $(document).ready(function() {
             let key = $("#" + id).closest(".settings-perm").data("key");
             var perms = ajaxPerms[key];
             if (!perms) {
-                perms = [settings.notifs[key].host];
+                let notifHost = settings.notifs[key].host;
+                if (notifHost) {
+                    perms = [notifHost];
+                }
             }
             if (!perms) return;
             if (this.checked) {
-                chrome.permissions.request({
-                    origins: perms
-                }, function(success) {
-                    var check = $("#" + id);
-                    if (success) {
-                        check.closest(".settings-perm").removeClass("has-warning").addClass("has-success");
-                    } else {
-                        var text = "Permission denied for " + perms.join(", ") + ".";
-                        $("#settings-alerts").append($("<div/>").addClass("alert alert-danger").text(text));
-                        check.prop("checked", false).change();
-                    }
-                });
+                try {
+                    chrome.permissions.request({
+                        origins: perms
+                    }, function(success) {
+                        var check = $("#" + id);
+                        if (success) {
+                            check.closest(".settings-perm").removeClass("has-warning").addClass("has-success");
+                        } else {
+                            var text = "Permission denied for " + perms.join(", ") + ".";
+                            $("#settings-alerts").append($("<div/>").addClass("alert alert-danger").text(text));
+                            check.prop("checked", false).change();
+                        }
+                    });
+                } catch (error) {
+                    console.error(error);
+                }
             }
         });
         // enable fields from checkbox selection
@@ -2764,11 +2794,15 @@ $(document).ready(function() {
             }
             settings.history["limit"] = parseInt($("#settings-history-limit").val());
             var revoke = function revoke(key) {
-                chrome.permissions.remove({
-                    origins: ajaxPerms[key]
-                }, function(success) {
-                    if (!success) revokeError = true;
-                });
+                try {
+                    chrome.permissions.remove({
+                        origins: ajaxPerms[key]
+                    }, function(success) {
+                        if (!success) revokeError = true;
+                    });
+                } catch (error) {
+                    console.error(error);
+                }
             }
             var revokeError = false;
             settings.notifs["facebook"] = {
@@ -2786,9 +2820,14 @@ $(document).ready(function() {
             settings.notifs["github"] = {
                 enable: $("#settings-notifs-github-enable").prop("checked")
             };
+            let githubLocalHost = $("#settings-notifs-github-local-host").val();
+            if (githubLocalHost && !githubLocalHost.endsWith("/")) {
+                githubLocalHost += "/";
+                $("#settings-notifs-github-local-host").val(githubLocalHost);
+            }
             settings.notifs["github-local"] = {
                 enable: $("#settings-notifs-github-local-enable").prop("checked"),
-                host: $("#settings-notifs-github-local-host").val()
+                host: githubLocalHost
             };
             var accounts = $("#settings-notifs-gmail-accounts").val().replace(/[^0-9,]/g, "");
             if (accounts) {
@@ -2804,9 +2843,14 @@ $(document).ready(function() {
                 enable: $("#settings-notifs-gmail-enable").prop("checked"),
                 accounts: accounts.sort()
             };
+            let jiraHost = $("#settings-notifs-jira-host").val();
+            if (jiraHost && !jiraHost.endsWith("/")) {
+                jiraHost += "/";
+                $("#settings-notifs-jira-host").val(jiraHost);
+            }
             settings.notifs["jira"] = {
                 enable: $("#settings-notifs-jira-enable").prop("checked"),
-                host: $("#settings-notifs-jira-host").val()
+                host: jiraHost
             };
             settings.notifs["linkedin"] = {
                 enable: {
@@ -3224,9 +3268,28 @@ $(document).ready(function() {
         resizeAllGridItems();
     });
 
+    addListeners();
+
     resizeAllGridItems();
     window.addEventListener("resize", resizeAllGridItems);
-})
+});
+
+var addListeners = function addListeners() {
+    $("#settings-notifs-github-local-host").on("blur", () => {
+        let githubLocalHost = $("#settings-notifs-github-local-host").val();
+        if (githubLocalHost && !githubLocalHost.endsWith("/")) {
+            githubLocalHost += "/";
+            $("#settings-notifs-github-local-host").val(githubLocalHost);
+        }
+    });
+    $("#settings-notifs-jira-host").on("blur", () => {
+        let jiraHost = $("#settings-notifs-jira-host").val();
+        if (jiraHost && !jiraHost.endsWith("/")) {
+            jiraHost += "/";
+            $("#settings-notifs-jira-host").val(jiraHost);
+        }
+    });
+};
 
 var resizeGridItem = function resizeGridItem(item) {
     grid = document.getElementById("links");

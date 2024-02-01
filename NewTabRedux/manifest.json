@@ -2,7 +2,7 @@
     "name": "New Tab Redux",
     "short_name": "New Tab Redux",
     "description": "A custom New Tab page, providing a quick, customizable layout of links and menus, as well as simple bookmark and history components.",
-    "version": "1.14.2",
+    "version": "1.15.0",
     "author": "Kallb123",
     "homepage_url": "https://github.com/Kallb123/NewTabRedux",
     "offline_enabled": true,
