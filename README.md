@@ -9,12 +9,18 @@ There are a variety of optional extras as well, including:
 * Widgets such as a clock, stopwatch, notepad, weather forecast, access to Chrome Apps, and IP information
 * Automatically renewing background images from Unsplash (with support for custom search terms or collections)
 
+![Preview image of extension](docs/preview.png)
+
 ## Installation
 
 New Tab Redux is built as a browser extension that replaces the New Tab page.
 The following steps will install the extension and automatically apply it as your New Tab page.
 
 ### Chrome
+
+[![Available in the Chrome Web Store logo](docs/get-chrome.png)](https://chromewebstore.google.com/detail/new-tab-redux/gfdohlojonkomcjiiibnfadnafoeenmf)
+
+#### Manually
 
 1. Clone the repository to your computer, or [download it as a ZIP](https://github.com/Kallb123/NewTabRedux/archive/master.zip) then extract it somewhere it can stay permanently
 2. Open the Chrome `Extension` settings by navigating the menus or visiting [chrome://extensions/](chrome://extensions/)
@@ -25,6 +31,10 @@ The following steps will install the extension and automatically apply it as you
 You may or may not want the extension to work in Incognito mode, this can be toggled by going into the extension Details page.
 
 ### Firefox
+
+[![Get the Mozilla Firefox Add-on logo](docs/get-firefox.png)](https://addons.mozilla.org/en-GB/firefox/addon/newtabredux/)
+
+#### Manually
 
 1. Download the latest xpi file from the [Releases page](https://github.com/Kallb123/NewTabRedux/releases)
 2. Open the Firefox `Addons` page by using the menu in the top right or by visiting [about:addons](about:addons)
@@ -185,30 +195,46 @@ With the above steps, you should end up with a block and dropdown like this:
 
 ## Notifications
 
-Enabling a notification option will prompt for the relevant permission in order to access the given website (and the corresponding block will be highlighted with green text).  Disabling it will not immediately remove this, but any unnecessary permissions will be dropped when settings are saved.
+Enabling a notification option will prompt for the relevant permission in order to access the given website (and the corresponding block will be highlighted with green text).
+Disabling it will not immediately remove this, but any unnecessary permissions will be dropped when settings are saved.
 
-In order to read arbitrary websites, the global permissions `https://*/` and/or `https://*/` must be granted.  If not (i.e. adding a permission just for a given site), it will be lost if the browser is restarted, unless explicitly declared in `optional_permissions` in the manifest (see [Chrome issue #158004](https://code.google.com/p/chromium/issues/detail?id=158004)).
+In order to read arbitrary websites, the global permissions `https://*/` and/or `https://*/` must be granted.
+If not (i.e. adding a permission just for a given site), it will be lost if the browser is restarted, unless explicitly declared in `optional_permissions` in the manifest (see [Chrome issue #158004](https://code.google.com/p/chromium/issues/detail?id=158004)).
 
 > Note: if an option is later re-enabled, Chrome may not re-request the permission, however all currently granted permissions can be seen from Chrome's extension settings page (chrome://extensions).
 
 ### Gmail
 
-The Gmail notifier can be configured for multiple accounts by specifying the user indexes (as can be found in a Google URL with `?authuser=X` or `/u/X/`).  If a user is not signed in, or does not have a Gmail account, an Authentication Required dialog will display from attempting to access the feed unauthorized.
+The Gmail notifier can be configured for multiple accounts by specifying the user indexes (as can be found in a Google URL with `?authuser=X` or `/u/X/`).
+If a user is not signed in, or does not have a Gmail account, an Authentication Required dialog will display from attempting to access the feed unauthorized.
+
+### GitHub Enterprise
+
+The GitHub Enterprise notifier can be enabled and pointed to your enterprise instance.
+The URL settings box should be set following the pattern: `https://my.github.instance.com/`
+
+### Jira
+
+The Jira notifier can be enabled and pointed to your Jira instance.
+The URL settings box should be set following the pattern: `https://my-instance.atlassian.net/`
 
 ## Incognito mode
 
-If New Tab Redux is allowed to run in incognito mode, it will also display as the New Tab page of incognito windows.  It shares settings with normal windows, however history and notifications are disabled.
+If New Tab Redux is allowed to run in incognito mode, it will also display as the New Tab page of incognito windows.
+It shares settings with normal windows, however history and notifications are disabled.
 
 ## Building
 
 ### Chrome
 
-Create a zip file of the extension folder (manifest, lib, res), this can be uploaded to the Web Store.
-The folder itself can be loaded into Chrome if not using the Web Store.
+Create a zip file of the extension folder (manifest, lib, res), this can be uploaded to the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole/).
+
+The folder itself can be loaded into Chrome if not using the Web Store, as above.
 
 ### Firefox
 
-Create a zip file of the extension (manifest, lib, res), this can then be uploaded to the Mozilla Addon Store.
+Create a zip file of the extension (manifest, lib, res), this can then be uploaded to the [Mozilla Add-on Developer Hub](https://addons.mozilla.org/en-GB/developers/).
+
 An XPI file must be created and signed in order to use the extension locally without using the store:
 
 1. Install NodeJS 16+: `curl -sL https://deb.nodesource.com/setup_16.x | sudo bash -`
